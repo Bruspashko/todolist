@@ -120,6 +120,10 @@ Function explanation:
 
 We need to add `init_app` in our factory class so it's executed on every app initialization. Please add this code to `__init__.py` before `return app`
 ```
+app.config.from_mapping(
+    SECRET_KEY='dev',
+    DATABASE=os.path.join(app.instance_path, 'todolist.sqlite'),
+)
 from . import db
 db.init_app(app)
 ```
