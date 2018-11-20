@@ -195,8 +195,6 @@ Lets register `/register` route that will be used to register a user
 def register():
     db = get_db()
     error = None
-    if not request.json or not 'username' in request.json:
-        abort(400)
 
     if not request.json['username']:
         error = 'Username is required.'
@@ -215,7 +213,7 @@ def register():
         last_row_id = db.execute('SELECT last_insert_rowid()').fetchone()
         request.json['id'] = last_row_id['last_insert_rowid()']
         return jsonify(request.json), 200
-    return jsonify({'error': True, 'message': error}), 401
+    return jsonify({'error': True, 'message': error}), 400
 ```
 
 `@bp.route` decorator is used to define the route for the endpoint. 
@@ -226,7 +224,7 @@ If user doesn't exists we will proceed with inserting a record in the table with
 
 We will return user information and ID in JSON format. We will use `jsonify` for it. 
 
-All errors will be return with HTTP 401 code and the following payload:
+All errors will be return with HTTP 400 code and the following payload:
 
 ```
 {
@@ -341,31 +339,48 @@ def createTask():
 def getTask(id):
   db = get_db()
   user_id = get_jwt_identity()
+  error = None
   task = db.execute('SELECT * FROM task WHERE user_id = ? AND id = ?', (user_id,id)).fetchone()
-  return jsonify(dict(task)), 200
+  if task is None:
+    error = "This task doesn't exist"
+  if error is None:
+    return jsonify(dict(task)), 200
+  return jsonify({'error': True, 'message': error}), 404
 
 @bp.route('/<int:id>', methods=['DELETE'])
 @jwt_required
 def deleteTask(id):
   db = get_db()
   user_id = get_jwt_identity()
-  db.execute('DELETE FROM task WHERE user_id = ? AND id = ?', (user_id,id))
-  db.commit()
-  return jsonify({"success": True}), 200
+  error = None
+  task = db.execute('SELECT * FROM task WHERE user_id = ? AND id = ?', (user_id,id)).fetchone()
+  if task is None:
+    error = "This task doesn't exist"
+  if error is None:
+    db.execute('DELETE FROM task WHERE user_id = ? AND id = ?', (user_id,id))
+    db.commit()
+    return jsonify({"success": True}), 200
+  return jsonify({'error': True, 'message': error}), 404
 
 @bp.route('/<int:id>', methods=['PUT'])
 @jwt_required
 def editTask(id):
   db = get_db()
   user_id = get_jwt_identity()
+  error = None
   if not request.json['title']:
       error = 'Title is required.'
   elif not request.json['body']:
       error = 'Body is required.'
-  db.execute('UPDATE task SET title = ?, body = ?WHERE user_id = ? AND id = ?', (request.json['title'],request.json['body'],user_id,id))
-  db.commit()
   task = db.execute('SELECT * FROM task WHERE user_id = ? AND id = ?', (user_id,id)).fetchone()
-  return jsonify(dict(task)), 200
+  if task is None:
+    error = "This task doesn't exist"
+  if error is None:
+    db.execute('UPDATE task SET title = ?, body = ?WHERE user_id = ? AND id = ?', (request.json['title'],request.json['body'],user_id,id))
+    db.commit()
+    task = db.execute('SELECT * FROM task WHERE user_id = ? AND id = ?', (user_id,id)).fetchone()
+    return jsonify(dict(task)), 200
+  return jsonify({'error': True, 'message': error}), 404
 ```
 
 The only thing to notice here is the decorators for the endpoint of individual resources. 
