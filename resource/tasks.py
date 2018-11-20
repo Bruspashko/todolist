@@ -47,7 +47,7 @@ def getTask(id):
     error = "This task doesn't exist"
   if error is None:
     return jsonify(dict(task)), 200
-  return jsonify({'error': True, 'message': error}), 401
+  return jsonify({'error': True, 'message': error}), 404
 
 @bp.route('/<int:id>', methods=['DELETE'])
 @jwt_required
@@ -62,7 +62,7 @@ def deleteTask(id):
     db.execute('DELETE FROM task WHERE user_id = ? AND id = ?', (user_id,id))
     db.commit()
     return jsonify({"success": True}), 200
-  return jsonify({'error': True, 'message': error}), 401
+  return jsonify({'error': True, 'message': error}), 404
 
 @bp.route('/<int:id>', methods=['PUT'])
 @jwt_required
@@ -82,5 +82,5 @@ def editTask(id):
     db.commit()
     task = db.execute('SELECT * FROM task WHERE user_id = ? AND id = ?', (user_id,id)).fetchone()
     return jsonify(dict(task)), 200
-  return jsonify({'error': True, 'message': error}), 401
+  return jsonify({'error': True, 'message': error}), 404
 

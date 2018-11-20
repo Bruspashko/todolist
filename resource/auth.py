@@ -10,8 +10,6 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 def register():
     db = get_db()
     error = None
-    if not request.json or not 'username' in request.json:
-        abort(400)
 
     if not request.json['username']:
         error = 'Username is required.'
@@ -30,7 +28,7 @@ def register():
         last_row_id = db.execute('SELECT last_insert_rowid()').fetchone()
         request.json['id'] = last_row_id['last_insert_rowid()']
         return jsonify(request.json), 200
-    return jsonify({'error': True, 'message': error}), 401
+    return jsonify({'error': True, 'message': error}), 400
   
 @bp.route('/login', methods=['POST'])
 def login():
@@ -50,5 +48,5 @@ def login():
     if error is None:
       token = create_access_token(user['id'], expires_delta=False)
       return jsonify({'token': token}), 200
-    return jsonify({'error': True, 'message': error}), 401
+    return jsonify({'error': True, 'message': error}), 400
          
