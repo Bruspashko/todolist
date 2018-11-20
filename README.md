@@ -430,7 +430,7 @@ We will be using CURL CLI client to test our application. To start we will regis
 Here is code for CURL command:
 ```
 curl -X POST \
-  https://it231-ostappaashko468200.codeanyapp.com/auth/register \
+  <server_url>/auth/register \
   -H 'accept: application/json' \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
@@ -455,7 +455,7 @@ The next step is to login and obtain our authorization token:
 
 ```
 curl -X POST \
-  https://it231-ostappaashko468200.codeanyapp.com/auth/login \
+  <server_url>/auth/login \
   -H 'accept: application/json' \
   -H 'cache-control: no-cache' \
   -H 'content-type: application/json' \
@@ -478,7 +478,7 @@ Lets try to get all our tasks now.
 
 ```
 curl -X GET \
-  https://it231-ostappaashko468200.codeanyapp.com/tasks/ \
+  <server_url>/tasks/ \
   -H 'accept: application/json' \
   -H 'authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NDI2ODUzNzAsIm5iZiI6MTU0MjY4NTM3MCwianRpIjoiNmViZDQ3N2QtYmUyNS00NDViLTllY2EtMDA1NmExMDE1YmM1IiwiaWRlbnRpdHkiOjE1LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.Sdr1m3GTaLuLLzPvDwka3zy_OrNvmM03CfOOjPeUHss' \
   -H 'cache-control: no-cache' \
@@ -500,7 +500,7 @@ Let's create a new task now by running the following request:
 
 ```
 curl -X POST \
-  https://it231-ostappaashko468200.codeanyapp.com/tasks/ \
+  <server_url>/tasks/ \
   -H 'accept: application/json' \
   -H 'authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NDI2ODUzNzAsIm5iZiI6MTU0MjY4NTM3MCwianRpIjoiNmViZDQ3N2QtYmUyNS00NDViLTllY2EtMDA1NmExMDE1YmM1IiwiaWRlbnRpdHkiOjE1LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.Sdr1m3GTaLuLLzPvDwka3zy_OrNvmM03CfOOjPeUHss' \
   -H 'cache-control: no-cache' \
@@ -523,3 +523,80 @@ The response we should get should be simillar to this:
     "user_id": 15
 }
 ```
+
+Let's modify our task by running PUT request: 
+```
+curl -X PUT \
+  <server_url>/tasks/7 \
+  -H 'accept: application/json' \
+  -H 'authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NDI2ODUzNzAsIm5iZiI6MTU0MjY4NTM3MCwianRpIjoiNmViZDQ3N2QtYmUyNS00NDViLTllY2EtMDA1NmExMDE1YmM1IiwiaWRlbnRpdHkiOjE1LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.Sdr1m3GTaLuLLzPvDwka3zy_OrNvmM03CfOOjPeUHss' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json' \
+  -d '{
+  "title": "Cook Dinner",
+  "body": "Should I get sushi instead? "
+}'
+```
+The reponse is: 
+
+```
+{
+    "body": "Should I get sushi instead? ",
+    "created": "Tue, 20 Nov 2018 03:48:20 GMT",
+    "id": 7,
+    "status": 0,
+    "title": "Cook Dinner",
+    "user_id": 15
+}
+```
+
+
+To get task with ID 7 we should run the following request
+
+```
+
+curl -X GET \
+  <server_url>/tasks/7 \
+  -H 'accept: application/json' \
+  -H 'authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NDI2ODUzNzAsIm5iZiI6MTU0MjY4NTM3MCwianRpIjoiNmViZDQ3N2QtYmUyNS00NDViLTllY2EtMDA1NmExMDE1YmM1IiwiaWRlbnRpdHkiOjE1LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.Sdr1m3GTaLuLLzPvDwka3zy_OrNvmM03CfOOjPeUHss' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json'
+}'
+```
+
+The response we will get is this: 
+
+```
+{
+    "body": "Should I get sushi instead? ",
+    "created": "Tue, 20 Nov 2018 03:48:20 GMT",
+    "id": 7,
+    "status": 0,
+    "title": "Cook Dinner",
+    "user_id": 15
+}
+```
+
+And the last endpoint to test is DELETE request. 
+
+To run it use the following request:
+```
+curl -X DELETE \
+  <server_url>/tasks/7 \
+  -H 'accept: application/json' \
+  -H 'authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1NDI2ODUzNzAsIm5iZiI6MTU0MjY4NTM3MCwianRpIjoiNmViZDQ3N2QtYmUyNS00NDViLTllY2EtMDA1NmExMDE1YmM1IiwiaWRlbnRpdHkiOjE1LCJmcmVzaCI6ZmFsc2UsInR5cGUiOiJhY2Nlc3MifQ.Sdr1m3GTaLuLLzPvDwka3zy_OrNvmM03CfOOjPeUHss' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json'
+}'
+```
+
+And the response is: 
+```
+{
+    "success": true
+}
+```
+
+__Please note: replace `<server_url>` with your server URL.__
+
+Our application is now tested. Happy coding!
